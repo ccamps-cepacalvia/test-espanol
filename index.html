@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Test de Nivel de Español CEFR · A1–B2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ivory:   #F8F4EE;
+    --ivory-d: #EDE7DC;
+    --terra:   #B85C38;
+    --terra-d: #8C3E22;
+    --ink:     #1E1A16;
+    --ink-m:   #5C5249;
+    --ink-l:   #9A9088;
+    --green:   #3A7A54;
+    --red:     #C0392B;
+    --border:  #D8CFBF;
+    --card:    #FFFFFF;
+    --radius:  10px;
+  }
+  html { background: var(--ivory); min-height: 100%; }
+  body {
+    font-family: 'Source Serif 4', Georgia, serif;
+    font-weight: 300;
+    color: var(--ink);
+    background: var(--ivory);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 1rem 4rem;
+  }
+
+  /* ── HEADER ── */
+  header {
+    width: 100%; max-width: 640px;
+    padding: 2.5rem 0 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 2.25rem;
+  }
+  header .eyebrow {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--terra); margin-bottom: 10px;
+  }
+  header h1 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700; font-size: clamp(26px, 5vw, 36px);
+    color: var(--ink); line-height: 1.2; margin-bottom: 8px;
+  }
+  header p { font-size: 14px; color: var(--ink-m); line-height: 1.6; }
+
+  /* ── CATEGORY CHIP ── */
+  .cat-chip {
+    display: inline-block;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    background: var(--ivory-d);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2px 9px;
+    color: var(--ink-m);
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* ── PROGRESS ── */
+  .progress-wrap { width: 100%; max-width: 640px; margin-bottom: 1.75rem; }
+  .progress-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .progress-top .p-label { font-size: 12px; color: var(--ink-l); letter-spacing: 0.05em; }
+  .progress-top .p-num { font-size: 13px; color: var(--ink-m); font-weight: 600; }
+  .progress-track { width: 100%; height: 4px; background: var(--ivory-d); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--terra); border-radius: 2px; transition: width 0.45s cubic-bezier(.4,0,.2,1); width: 2.5%; }
+  .level-dots { display: flex; gap: 6px; margin-top: 6px; }
+  .level-dot { height: 3px; flex: 1; border-radius: 2px; background: var(--ivory-d); transition: background 0.3s; }
+  .level-dot.active { background: var(--terra); }
+
+  /* ── QUESTION CARD ── */
+  .q-card {
+    width: 100%; max-width: 640px;
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 2rem 2rem 1.5rem;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  .q-header { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+  .level-badge {
+    display: inline-block; font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--terra); background: #FAE8E0;
+    border-radius: 5px; padding: 3px 10px;
+  }
+  .q-text {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 500; font-size: clamp(15px, 2.5vw, 18px);
+    color: var(--ink); line-height: 1.55; margin-bottom: 1.5rem;
+  }
+  .opts { display: flex; flex-direction: column; gap: 9px; }
+  .opt-btn {
+    width: 100%; text-align: left; padding: 13px 18px;
+    border-radius: var(--radius); border: 1px solid var(--border);
+    background: var(--ivory); color: var(--ink);
+    font-size: 15px; font-family: 'Source Serif 4', serif;
+    font-weight: 300; cursor: pointer; line-height: 1.5;
+    transition: background 0.15s, border-color 0.15s, transform 0.1s;
+  }
+  .opt-btn:hover:not(:disabled) { background: var(--ivory-d); border-color: var(--terra); transform: translateX(3px); }
+  .opt-btn.correct { background: #E8F5EE; border-color: var(--green); color: var(--green); font-weight: 400; }
+  .opt-btn.wrong   { background: #FAEAE8; border-color: var(--red);   color: var(--red); }
+  .opt-btn:disabled { cursor: default; transform: none; }
+  .feedback-row { margin-top: 1.1rem; min-height: 36px; display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .feedback-txt { font-size: 13px; line-height: 1.5; flex: 1; padding-top: 2px; }
+  .feedback-txt.ok  { color: var(--green); }
+  .feedback-txt.err { color: var(--red); }
+  .next-btn {
+    padding: 9px 22px; border-radius: var(--radius);
+    border: none; background: var(--terra); color: #fff;
+    font-size: 14px; font-family: 'Source Serif 4', serif;
+    font-weight: 400; cursor: pointer; white-space: nowrap;
+    transition: background 0.15s; flex-shrink: 0;
+  }
+  .next-btn:hover { background: var(--terra-d); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(30,26,22,0.55);
+    display: flex; align-items: center; justify-content: center;
+    padding: 1rem; z-index: 200; animation: fadeO 0.25s ease;
+  }
+  @keyframes fadeO { from { opacity:0; } to { opacity:1; } }
+  .modal-box {
+    background: var(--card); border-radius: 16px;
+    border: 1px solid var(--border); padding: 2rem 2rem 1.75rem;
+    max-width: 420px; width: 100%; animation: scaleIn 0.25s ease;
+  }
+  @keyframes scaleIn { from { transform:scale(0.94); opacity:0; } to { transform:scale(1); opacity:1; } }
+  .modal-box h2 {
+    font-family: 'Playfair Display', serif; font-size: 22px;
+    font-weight: 700; color: var(--ink); margin-bottom: 6px;
+  }
+  .modal-box p { font-size: 14px; color: var(--ink-m); line-height: 1.6; margin-bottom: 1.25rem; }
+  .modal-input {
+    width: 100%; padding: 12px 14px; border-radius: var(--radius);
+    border: 1.5px solid var(--border); background: var(--ivory);
+    font-family: 'Source Serif 4', serif; font-size: 16px;
+    color: var(--ink); outline: none; transition: border-color 0.2s;
+  }
+  .modal-input:focus { border-color: var(--terra); }
+  .modal-actions { display: flex; gap: 10px; margin-top: 1.25rem; justify-content: flex-end; }
+  .btn-accept {
+    padding: 10px 26px; border-radius: var(--radius); border: none;
+    background: var(--terra); color: #fff; font-size: 15px;
+    font-family: 'Source Serif 4', serif; font-weight: 400;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .btn-accept:hover { background: var(--terra-d); }
+  .btn-skip {
+    padding: 10px 18px; border-radius: var(--radius);
+    border: 1px solid var(--border); background: transparent;
+    color: var(--ink-m); font-size: 14px;
+    font-family: 'Source Serif 4', serif; cursor: pointer;
+  }
+  .btn-skip:hover { background: var(--ivory-d); }
+
+  /* ── RESULT ── */
+  .result-wrap { width: 100%; max-width: 640px; display: none; }
+  .res-hero {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 2.25rem 2rem;
+    text-align: center; margin-bottom: 1.25rem;
+  }
+  .res-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--terra); margin-bottom: 12px; }
+  .res-level-badge {
+    display: inline-block; font-family: 'Playfair Display', serif;
+    font-size: 58px; font-weight: 700; color: var(--ink); line-height: 1;
+    margin-bottom: 14px; padding: 14px 40px;
+    border: 2px solid var(--terra); border-radius: 12px;
+    background: var(--ivory); letter-spacing: 0.06em;
+  }
+  .res-name { font-size: 20px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+  .res-desc { font-size: 15px; color: var(--ink-m); line-height: 1.65; max-width: 420px; margin: 0 auto 16px; }
+  .res-score { font-size: 13px; color: var(--ink-l); }
+  .res-section { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.5rem 1.75rem; margin-bottom: 1.1rem; }
+  .res-section h3 { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 500; color: var(--ink); margin-bottom: 1rem; }
+  .breakdown-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .bk-label { font-size: 12px; font-weight: 600; color: var(--ink-m); min-width: 24px; letter-spacing: 0.04em; }
+  .bk-track { flex: 1; height: 6px; background: var(--ivory-d); border-radius: 3px; overflow: hidden; }
+  .bk-fill { height: 100%; background: var(--terra); border-radius: 3px; transition: width 0.6s cubic-bezier(.4,0,.2,1); }
+  .bk-score { font-size: 12px; color: var(--ink-l); min-width: 70px; text-align: right; }
+
+  /* category stats */
+  .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .cat-card { background: var(--ivory); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 14px; }
+  .cat-card .cat-title { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-m); margin-bottom: 6px; }
+  .cat-card .cat-val { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 500; color: var(--ink); }
+  .cat-card .cat-sub { font-size: 11px; color: var(--ink-l); margin-top: 2px; }
+
+  .rec-box { background: #FAE8E0; border-left: 3px solid var(--terra); border-radius: 0 var(--radius) var(--radius) 0; padding: 12px 16px; font-size: 14px; color: var(--terra-d); line-height: 1.6; }
+  .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 0.25rem; }
+  .btn-dl {
+    padding: 11px 24px; border-radius: var(--radius); border: none;
+    background: var(--terra); color: #fff; font-size: 14px;
+    font-family: 'Source Serif 4', serif; font-weight: 400; cursor: pointer; transition: background 0.15s;
+  }
+  .btn-dl:hover { background: var(--terra-d); }
+  .btn-restart {
+    padding: 11px 22px; border-radius: var(--radius);
+    border: 1px solid var(--border); background: transparent;
+    color: var(--ink-m); font-size: 14px;
+    font-family: 'Source Serif 4', serif; cursor: pointer;
+  }
+  .btn-restart:hover { background: var(--ivory-d); }
+  footer { margin-top: 3rem; font-size: 12px; color: var(--ink-l); letter-spacing: 0.04em; text-align: center; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Centro de Educación Para Adultos Calvià</div>
+  <h1>Test de Nivel<br>de Español</h1>
+  <p>40 preguntas · Vocabulario · Verbos · Expresiones · Gramática &nbsp;|&nbsp; Marco CEFR A1–B2</p>
+</header>
+
+<div class="progress-wrap" id="progress-wrap">
+  <div class="progress-top">
+    <span class="p-label">Progreso</span>
+    <span class="p-num" id="prog-num">1 / 40</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="prog-fill"></div></div>
+  <div class="level-dots">
+    <div class="level-dot" id="dot-a1"></div>
+    <div class="level-dot" id="dot-a2"></div>
+    <div class="level-dot" id="dot-b1"></div>
+    <div class="level-dot" id="dot-b2"></div>
+  </div>
+</div>
+
+<div class="q-card" id="q-card">
+  <div class="q-header">
+    <span class="level-badge" id="lvl-badge">A1</span>
+    <span class="cat-chip" id="cat-chip">Vocabulario</span>
+  </div>
+  <p class="q-text" id="q-text"></p>
+  <div class="opts" id="opts"></div>
+  <div class="feedback-row">
+    <span class="feedback-txt" id="feedback"></span>
+    <button class="next-btn" id="next-btn" style="display:none;" onclick="nextQ()">Siguiente &rarr;</button>
+  </div>
+</div>
+
+<div class="result-wrap" id="result-wrap">
+  <div class="res-hero">
+    <div class="res-eyebrow">Resultado del test</div>
+    <div class="res-level-badge" id="res-level">B1</div>
+    <p class="res-name" id="res-name"></p>
+    <p class="res-desc" id="res-desc"></p>
+    <p class="res-score" id="res-score"></p>
+  </div>
+  <div class="res-section">
+    <h3>Puntuación por nivel</h3>
+    <div id="breakdown"></div>
+  </div>
+  <div class="res-section">
+    <h3>Resultados por categoría</h3>
+    <div class="cat-grid" id="cat-grid"></div>
+  </div>
+  <div class="res-section">
+    <h3>Recomendación</h3>
+    <div class="rec-box" id="res-rec"></div>
+  </div>
+  <div class="actions">
+    <button class="btn-dl" onclick="downloadTxt()">&#8681; Volver a descargar el informe</button>
+    <button class="btn-restart" onclick="restart()">&#8635; Repetir el test</button>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" style="display:none;">
+  <div class="modal-box">
+    <h2>¡Test completado!</h2>
+    <p>Introduce tu nombre para guardar el informe de resultados. Se descargará automáticamente al pulsar Aceptar.</p>
+    <input class="modal-input" id="name-input" type="text" placeholder="Nombre completo del alumno" maxlength="80" onkeydown="if(event.key==='Enter') acceptName()" />
+    <div class="modal-actions">
+      <button class="btn-skip" onclick="acceptName()">Omitir</button>
+      <button class="btn-accept" onclick="acceptName()">Aceptar</button>
+    </div>
+  </div>
+</div>
+
+<footer>Test de clasificación &copy; Centro de Educación Para Adultos Calvià &mdash; Uso educativo</footer>
+
+<script>
+/* =====================================================================
+   40 PREGUNTAS MEJORADAS — distribución y puntuación:
+   A1: 10 × 1 pt  =  10 pts
+   A2: 10 × 2 pts =  20 pts
+   B1: 10 × 3 pts =  30 pts
+   B2: 10 × 4 pts =  40 pts
+   TOTAL MÁXIMO   = 100 pts
+   Categorías: Vocabulario | Verbos | Expresiones | Gramática | Comprensión
+===================================================================== */
+const questions = [
+
+  /* ══════════════ A1 — 10 preguntas (Supervivencia básica y presente) ══════════════ */
+  {
+    level:"A1", cat:"Vocabulario",
+    text:'El hermano de mi madre es mi...',
+    opts:["abuelo","primo","tío","sobrino"],
+    ans:2, pts:1,
+    explain:'El vocabulario de la familia es básico en A1. El hermano de tu madre es tu tío.'
+  },
+  {
+    level:"A1", cat:"Verbos",
+    text:'Completa: "Yo ___ agua porque tengo sed."',
+    opts:["bebo","bebes","bebe","beber"],
+    ans:0, pts:1,
+    explain:'Con el pronombre "yo", la terminación en presente regular es "-o" (bebo).'
+  },
+  {
+    level:"A1", cat:"Gramática",
+    text:'¿Cuál es el artículo correcto? "___ libro está en la mesa."',
+    opts:["El","La","Los","Las"],
+    ans:0, pts:1,
+    explain:'La palabra "libro" es un sustantivo masculino singular, por lo que lleva el artículo "El".'
+  },
+  {
+    level:"A1", cat:"Vocabulario",
+    text:'¿Qué hora es? "14:30"',
+    opts:["Son las dos y cuarto.","Son las catorce y media.","Son las dos y media.","Son las tres menos cuarto."],
+    ans:2, pts:1,
+    explain:'En español coloquial, las 14:30 se lee como "las dos y media" de la tarde.'
+  },
+  {
+    level:"A1", cat:"Expresiones",
+    text:'¿Cómo se responde normalmente a "¿Qué tal?"',
+    opts:["Me llamo Ana.","Bien, gracias. ¿Y tú?","Soy de México.","Tengo veinte años."],
+    ans:1, pts:1,
+    explain:'"¿Qué tal?" es un saludo para preguntar cómo estás. La respuesta natural es decir "Bien" y devolver la pregunta.'
+  },
+  {
+    level:"A1", cat:"Vocabulario",
+    text:'¿Cuál es el lugar donde compramos pan?',
+    opts:["La farmacia","La carnicería","La panadería","La librería"],
+    ans:2, pts:1,
+    explain:'El pan se compra en la panadería (palabra derivada de "pan").'
+  },
+  {
+    level:"A1", cat:"Verbos",
+    text:'"¿De dónde ___ tú?" — "Soy de España."',
+    opts:["es","eres","soy","son"],
+    ans:1, pts:1,
+    explain:'El verbo "ser" para la segunda persona del singular (tú) es "eres".'
+  },
+  {
+    level:"A1", cat:"Gramática",
+    text:'¿Cuál es el plural correcto de "la luz"?',
+    opts:["las luzes","las luses","las luçes","las luces"],
+    ans:3, pts:1,
+    explain:'En español, las palabras que terminan en "-z" cambian la "z" por "c" antes de añadir "-es" para formar el plural.'
+  },
+  {
+    level:"A1", cat:"Vocabulario",
+    text:'¿Qué día va después del martes?',
+    opts:["Jueves","Lunes","Miércoles","Viernes"],
+    ans:2, pts:1,
+    explain:'El orden de los días es: lunes, martes, miércoles, jueves...'
+  },
+  {
+    level:"A1", cat:"Expresiones",
+    text:'¿Qué se dice cuando alguien estornuda?',
+    opts:["¡Buen provecho!","¡Salud!","¡Felicidades!","¡Perdón!"],
+    ans:1, pts:1,
+    explain:'La norma de cortesía habitual en español cuando alguien estornuda es decir "¡Salud!".'
+  },
+
+  /* ══════════════ A2 — 10 preguntas (Pasados, descripciones y rutina) ══════════════ */
+  {
+    level:"A2", cat:"Verbos",
+    text:'"Ayer nosotros ___ al cine a ver una película."',
+    opts:["vamos","fuimos","íbamos","iremos"],
+    ans:1, pts:2,
+    explain:'"Ayer" indica una acción puntual y terminada en el pasado, por lo que usamos el pretérito indefinido: "fuimos".'
+  },
+  {
+    level:"A2", cat:"Gramática",
+    text:'Elige la opción correcta: "A mí ___ gusta el chocolate."',
+    opts:["te","le","me","se"],
+    ans:2, pts:2,
+    explain:'Con el verbo gustar, para la primera persona ("A mí") se usa el pronombre de objeto indirecto "me".'
+  },
+  {
+    level:"A2", cat:"Vocabulario",
+    text:'Una mujer "embarazada" es una mujer que…',
+    opts:["siente mucha vergüenza.","está muy cansada.","va a tener un bebé.","tiene un problema grave."],
+    ans:2, pts:2,
+    explain:'Falso amigo clásico. "Embarazada" significa que espera un bebé (pregnant), no que está avergonzada (embarrassed).'
+  },
+  {
+    level:"A2", cat:"Expresiones",
+    text:'Si una persona dice "Tengo sed", ¿qué necesita?',
+    opts:["Dormir","Comer algo","Beber agua","Ponerse un abrigo"],
+    ans:2, pts:2,
+    explain:'"Tener sed" significa necesitar o querer beber líquidos.'
+  },
+  {
+    level:"A2", cat:"Verbos",
+    text:'"De pequeño, yo ___ todos los días en el parque."',
+    opts:["juego","jugué","jugaba","jugaré"],
+    ans:2, pts:2,
+    explain:'"De pequeño" y "todos los días" indican una rutina o hábito en el pasado, lo que requiere pretérito imperfecto: "jugaba".'
+  },
+  {
+    level:"A2", cat:"Gramática",
+    text:'Comparativo: "Este coche es ___ rápido que el otro."',
+    opts:["tan","más","mucho","muy"],
+    ans:1, pts:2,
+    explain:'La estructura de superioridad se forma con "más + adjetivo + que".'
+  },
+  {
+    level:"A2", cat:"Verbos",
+    text:'"Yo no ___ a tu hermano. ¿Cómo se llama?"',
+    opts:["sé","conozco","sabo","conoces"],
+    ans:1, pts:2,
+    explain:'Para hablar de personas o lugares con los que estamos familiarizados usamos el verbo "conocer", no "saber".'
+  },
+  {
+    level:"A2", cat:"Expresiones",
+    text:'"¿A qué hora ___ el tren para Madrid?"',
+    opts:["sale","está","va","tiene"],
+    ans:0, pts:2,
+    explain:'Para preguntar por el inicio del trayecto de un medio de transporte se usa el verbo "salir".'
+  },
+  {
+    level:"A2", cat:"Vocabulario",
+    text:'Lo contrario de "barato" es...',
+    opts:["Malo","Caro","Limpio","Fácil"],
+    ans:1, pts:2,
+    explain:'Algo que cuesta mucho dinero es "caro"; lo contrario de barato.'
+  },
+  {
+    level:"A2", cat:"Comprensión",
+    text:'"Me duele la cabeza y tengo 39 grados de fiebre". ¿Qué le pasa a esta persona?',
+    opts:["Está cansada.","Tiene hambre.","Está enferma.","Está aburrida."],
+    ans:2, pts:2,
+    explain:'Tener dolor y fiebre son síntomas claros de estar enfermo.'
+  },
+
+  /* ══════════════ B1 — 10 preguntas (Subjuntivo básico, futuro, preposiciones) ══════════════ */
+  {
+    level:"B1", cat:"Verbos",
+    text:'"Quiero que tú ___ a mi fiesta de cumpleaños."',
+    opts:["vienes","vendrás","vengas","venías"],
+    ans:2, pts:3,
+    explain:'El verbo "querer" expresa voluntad. Cuando hay cambio de sujeto (yo quiero -> tú vienes), se usa el presente de subjuntivo: "vengas".'
+  },
+  {
+    level:"B1", cat:"Gramática",
+    text:'"He comprado este regalo ___ mi madre."',
+    opts:["por","para","a","de"],
+    ans:1, pts:3,
+    explain:'Para indicar el destinatario o la finalidad de un objeto o acción, se utiliza la preposición "para".'
+  },
+  {
+    level:"B1", cat:"Vocabulario",
+    text:'¿Cuál de estas palabras es sinónimo de "agotado"?',
+    opts:["Feliz","Muy cansado","Enfadado","Tranquilo"],
+    ans:1, pts:3,
+    explain:'Estar "agotado" significa estar extremadamente cansado, sin energía.'
+  },
+  {
+    level:"B1", cat:"Expresiones",
+    text:'¿Qué significa la expresión "costar un ojo de la cara"?',
+    opts:["Ser muy doloroso","Ser muy peligroso","Ser muy caro","Ser muy difícil de encontrar"],
+    ans:2, pts:3,
+    explain:'Es una expresión idiomática que significa que algo tiene un precio excesivamente alto.'
+  },
+  {
+    level:"B1", cat:"Verbos",
+    text:'"Llevo tres años ___ español en esta escuela."',
+    opts:["estudiar","estudiado","estudio","estudiando"],
+    ans:3, pts:3,
+    explain:'La perífrasis "llevar + gerundio" se usa para expresar la duración de una acción que empezó en el pasado y continúa en el presente.'
+  },
+  {
+    level:"B1", cat:"Expresiones",
+    text:'¿Qué significa el refrán "No hay mal que por bien no venga"?',
+    opts:[
+      "De las situaciones negativas siempre se puede sacar algo positivo.",
+      "Las cosas malas duran mucho tiempo.",
+      "No debes hacer el mal a los demás.",
+      "Todo lo malo tiene consecuencias peores."
+    ],
+    ans:0, pts:3,
+    explain:'Es un refrán optimista que invita a ver el lado positivo o la lección de las adversidades.'
+  },
+  {
+    level:"B1", cat:"Gramática",
+    text:'"Cuando ___ mayor, quiero ser arquitecto."',
+    opts:["soy","seré","sea","fui"],
+    ans:2, pts:3,
+    explain:'Las oraciones temporales introducidas por "cuando" que se refieren al futuro requieren el uso del subjuntivo: "sea".'
+  },
+  {
+    level:"B1", cat:"Comprensión",
+    text:'"Estaba tan nervioso por el examen que no he pegado ojo en toda la noche". ¿Qué significa "no pegar ojo"?',
+    opts:["No dejar de leer","No poder dormir nada","Llorar mucho","Estar ciego"],
+    ans:1, pts:3,
+    explain:'"No pegar ojo" es una expresión coloquial muy común que significa ser incapaz de conciliar el sueño.'
+  },
+  {
+    level:"B1", cat:"Vocabulario",
+    text:'Añadiendo el prefijo "des-", ¿cuál es el opuesto de "ordenado"?',
+    opts:["Inordenado","Antiordenado","Desordenado","Malordenado"],
+    ans:2, pts:3,
+    explain:'El prefijo "des-" se usa frecuentemente en español para formar antónimos, como en ordenado/desordenado.'
+  },
+  {
+    level:"B1", cat:"Expresiones",
+    text:'¿Cuál es el significado de "echar de menos" a alguien?',
+    opts:["Odiar a esa persona","Sentir nostalgia o falta por su ausencia","Olvidarse de esa persona","Envidiar a esa persona"],
+    ans:1, pts:3,
+    explain:'"Echar de menos" (o extrañar en Latinoamérica) significa sentir tristeza por la ausencia de alguien o algo.'
+  },
+
+  /* ══════════════ B2 — 10 preguntas (Subjuntivo avanzado, pasiva, conectores) ══════════════ */
+  {
+    level:"B2", cat:"Verbos",
+    text:'"Si ___ (estudiar) más, habrías aprobado el examen."',
+    opts:["habrías estudiado","estudiarías","hubieras estudiado","estudiabas"],
+    ans:2, pts:4,
+    explain:'Condicional irreal en el pasado: requiere "Si + pluscuamperfecto de subjuntivo (hubieras estudiado) + condicional compuesto".'
+  },
+  {
+    level:"B2", cat:"Gramática",
+    text:'Elige la frase correcta con pasiva refleja:',
+    opts:[
+      "Se vende pisos en esta zona.",
+      "Se venden pisos en esta zona.",
+      "Se venden piso en esta zona.",
+      "Los pisos fue vendidos en esta zona."
+    ],
+    ans:1, pts:4,
+    explain:'En la pasiva refleja, el verbo debe concordar en número con el sujeto paciente. Como "pisos" es plural, debe ser "Se venden".'
+  },
+  {
+    level:"B2", cat:"Vocabulario",
+    text:'Alguien que es muy terco y nunca cambia de opinión es una persona...',
+    opts:["Perspicaz","Comprensiva","Cabezota","Empática"],
+    ans:2, pts:4,
+    explain:'"Cabezota" (o testarudo/obstinado) describe a alguien que se niega a cambiar su actitud o ideas.'
+  },
+  {
+    level:"B2", cat:"Expresiones",
+    text:'¿Qué significa que alguien te está "tomando el pelo"?',
+    opts:[
+      "Te está acariciando la cabeza.",
+      "Te está engañando o gastando una broma.",
+      "Te está ayudando con un problema difícil.",
+      "Te está criticando a tus espaldas."
+    ],
+    ans:1, pts:4,
+    explain:'"Tomar el pelo" es una expresión idiomática de nivel avanzado que significa burlarse o engañar a alguien en tono de broma.'
+  },
+  {
+    level:"B2", cat:"Comprensión",
+    text:'"A pesar de la intensa lluvia, el concierto al aire libre se llevó a cabo." ¿Qué ocurrió?',
+    opts:[
+      "El concierto se canceló por la lluvia.",
+      "El concierto se celebró con normalidad.",
+      "El concierto se pospuso para otro día.",
+      "Se cambió el lugar del concierto."
+    ],
+    ans:1, pts:4,
+    explain:'"Llevarse a cabo" significa realizarse o ejecutarse. El conector concesivo "A pesar de" indica que la lluvia no lo impidió.'
+  },
+  {
+    level:"B2", cat:"Verbos",
+    text:'"Cuando vio el fantasma, se ___ blanco del susto."',
+    opts:["quedó","puso","volvió","hizo"],
+    ans:0, pts:4,
+    explain:'Para expresar un cambio de estado físico o anímico repentino provocado por una causa externa (un susto), usamos el verbo de cambio "quedarse" (quedarse blanco, de piedra, mudo).'
+  },
+  {
+    level:"B2", cat:"Gramática",
+    text:'"Por mucho que me ___, no voy a perdonarle."',
+    opts:["ruega","ruegue","rogó","rogará"],
+    ans:1, pts:4,
+    explain:'El conector concesivo "Por mucho que" cuando se refiere al futuro o a un hecho hipotético requiere el uso del subjuntivo ("ruegue").'
+  },
+  {
+    level:"B2", cat:"Vocabulario",
+    text:'Falso amigo: ¿Qué significa "actualmente" en español?',
+    opts:["De hecho / En realidad","Frecuentemente","En el momento presente / Hoy en día","Inmediatamente"],
+    ans:2, pts:4,
+    explain:'"Actualmente" significa "en la actualidad" (nowadays/currently), no significa "actually" (que sería "de hecho" o "en realidad").'
+  },
+  {
+    level:"B2", cat:"Expresiones",
+    text:'¿Qué significa la expresión "ponerse las pilas"?',
+    opts:[
+      "Comprar baterías nuevas.",
+      "Empezar a trabajar o esforzarse con energía.",
+      "Enfadarse mucho con alguien.",
+      "Tomarse un descanso necesario."
+    ],
+    ans:1, pts:4,
+    explain:'Es una expresión coloquial que indica la necesidad de activarse, concentrarse y esforzarse más en una tarea.'
+  },
+  {
+    level:"B2", cat:"Verbos",
+    text:'"___ lo que ___, él siempre hará lo que quiera."',
+    opts:["Digan / digan","Dicen / dicen","Diga / diga","Dirán / dirán"],
+    ans:0, pts:4,
+    explain:'Es una estructura concesiva reduplicativa ("verbo en subjuntivo + pronombre relativo + mismo verbo en subjuntivo") para expresar indiferencia ante un obstáculo.'
+  }
+];
+
+/* ═══════════════════════════════════════════
+   DATOS DE NIVEL
+═══════════════════════════════════════════ */
+const levelInfo = {
+  A1:{
+    label:"A1 — Principiante",
+    desc:"Comprendes y usas expresiones cotidianas muy básicas. Puedes presentarte y hacer preguntas sencillas sobre tu entorno.",
+    rec:"Trabaja el vocabulario esencial, los artículos, los verbos ser/estar/tener/ir, los números y las rutinas del día."
+  },
+  A2:{
+    label:"A2 — Básico",
+    desc:"Comprendes frases y expresiones de uso frecuente sobre temas familiares. Puedes comunicarte en situaciones simples.",
+    rec:"Practica el pretérito indefinido e imperfecto, los verbos ser/estar, los pronombres y las preposiciones de lugar y tiempo."
+  },
+  B1:{
+    label:"B1 — Intermedio",
+    desc:"Te desenvuelves en la mayoría de las situaciones cotidianas. Produces textos sencillos sobre temas de interés y explicas tus opiniones.",
+    rec:"Profundiza en el subjuntivo presente, las oraciones temporales con 'cuando', las expresiones idiomáticas y el vocabulario temático."
+  },
+  B2:{
+    label:"B2 — Intermedio alto",
+    desc:"Comprendes textos complejos y te expresas con fluidez y espontaneidad. Interactúas con hablantes nativos sin grandes esfuerzos.",
+    rec:"Perfecciona el subjuntivo imperfecto, el condicional compuesto, la voz pasiva, el estilo indirecto y el registro formal escrito."
+  }
+};
+const levelMax = { A1:10, A2:20, B1:30, B2:40 };
+const cats = ["Vocabulario","Verbos","Expresiones","Gramática","Comprensión"];
+
+/* ═══════════════════════════════════════════
+   ESTADO
+═══════════════════════════════════════════ */
+let cur = 0, totalScore = 0, studentName = "";
+const earned   = { A1:0, A2:0, B1:0, B2:0 };
+const catStats = {};
+cats.forEach(c => catStats[c] = { correct:0, total:0 });
+const answers = [];
+
+/* ═══════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════ */
+function renderQ() {
+  const q = questions[cur];
+  const pct = Math.max(Math.round((cur / questions.length) * 100), 2);
+  document.getElementById("prog-fill").style.width = pct + "%";
+  document.getElementById("prog-num").textContent = (cur+1) + " / " + questions.length;
+
+  const lvlOrder = ["A1","A2","B1","B2"];
+  lvlOrder.forEach(lv => {
+    const el = document.getElementById("dot-"+lv.toLowerCase());
+    el.classList.toggle("active", lvlOrder.indexOf(lv) <= lvlOrder.indexOf(q.level));
+  });
+
+  document.getElementById("lvl-badge").textContent = "NIVEL " + q.level;
+  document.getElementById("cat-chip").textContent = q.cat;
+  document.getElementById("q-text").textContent = q.text;
+  document.getElementById("feedback").textContent = "";
+  document.getElementById("feedback").className = "feedback-txt";
+  document.getElementById("next-btn").style.display = "none";
+
+  const opts = document.getElementById("opts");
+  opts.innerHTML = "";
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement("button");
+    btn.className = "opt-btn";
+    btn.textContent = o;
+    btn.onclick = () => pick(i);
+    opts.appendChild(btn);
+  });
+
+  const card = document.getElementById("q-card");
+  card.style.animation = "none";
+  void card.offsetWidth;
+  card.style.animation = "slideUp 0.3s ease";
+}
+
+function pick(idx) {
+  const q = questions[cur];
+  const btns = document.querySelectorAll(".opt-btn");
+  btns.forEach(b => b.disabled = true);
+
+  const correct = idx === q.ans;
+  const ptEarned = correct ? q.pts : 0;
+  btns[q.ans].classList.add("correct");
+  if (!correct) btns[idx].classList.add("wrong");
+
+  catStats[q.cat].total++;
+  if (correct) {
+    catStats[q.cat].correct++;
+    totalScore += q.pts;
+    earned[q.level] += q.pts;
+  }
+
+  const fb = document.getElementById("feedback");
+  fb.textContent = correct ? "✓ Correcto" : "✗ Incorrecto — " + q.explain;
+  fb.className = "feedback-txt " + (correct ? "ok" : "err");
+
+  answers.push({ n:cur+1, level:q.level, cat:q.cat, question:q.text,
+    chosen:q.opts[idx], correct:q.opts[q.ans], isCorrect:correct,
+    pts:q.pts, earned:ptEarned });
+
+  if (cur < questions.length - 1) {
+    document.getElementById("next-btn").style.display = "inline-block";
+  } else {
+    setTimeout(() => showModal(), 700);
+  }
+}
+
+function nextQ() { cur++; renderQ(); }
+
+/* ═══════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════ */
+function showModal() {
+  document.getElementById("modal").style.display = "flex";
+  setTimeout(() => document.getElementById("name-input").focus(), 100);
+}
+/* ── URL del script de Google Apps (reemplaza con la tuya) ── */
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyw9nUOqnIuuE4z7uFZMkt_HfDa2wgneqswBXYj7QGkwWrk6XWyuosgKb6SxILeS--MxA/exec";
+
+function acceptName() {
+  const val = document.getElementById("name-input").value.trim();
+  studentName = val || "Alumno/a";
+  document.getElementById("modal").style.display = "none";
+  showResult();
+  setTimeout(() => downloadTxt(), 400);
+  sendToSheets();
+}
+
+function sendToSheets() {
+  if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("PEGA_AQUÍ")) return;
+  const level = computeLevel();
+  const now   = new Date();
+  const payload = {
+    nombre     : studentName,
+    fecha      : now.toLocaleDateString("es-ES", { day:"2-digit", month:"2-digit", year:"numeric" }),
+    hora       : now.toLocaleTimeString("es-ES", { hour:"2-digit", minute:"2-digit" }),
+    nivel      : level,
+    puntuacion : totalScore,
+    porcentaje : Math.round((totalScore / 100) * 100) + "%",
+    pts_A1     : earned.A1 + " / 10",
+    pts_A2     : earned.A2 + " / 20",
+    pts_B1     : earned.B1 + " / 30",
+    pts_B2     : earned.B2 + " / 40",
+    cat_vocabulario : catStats["Vocabulario"].correct  + "/" + catStats["Vocabulario"].total,
+    cat_verbos      : catStats["Verbos"].correct       + "/" + catStats["Verbos"].total,
+    cat_expresiones : catStats["Expresiones"].correct  + "/" + catStats["Expresiones"].total,
+    cat_gramatica   : catStats["Gramática"].correct    + "/" + catStats["Gramática"].total,
+    cat_comprension : catStats["Comprensión"].correct  + "/" + catStats["Comprensión"].total
+  };
+  fetch(APPS_SCRIPT_URL, {
+    method : "POST",
+    mode   : "no-cors",
+    headers: { "Content-Type": "application/json" },
+    body   : JSON.stringify(payload)
+  }).catch(() => {});
+}
+
+/* ═══════════════════════════════════════════
+   RESULT
+═══════════════════════════════════════════ */
+function computeLevel() {
+  const p = totalScore / 100;
+  if (p >= 0.75) return "B2";
+  if (p >= 0.50) return "B1";
+  if (p >= 0.25) return "A2";
+  return "A1";
+}
+
+function showResult() {
+  document.getElementById("q-card").style.display = "none";
+  document.getElementById("progress-wrap").style.display = "none";
+  document.getElementById("result-wrap").style.display = "block";
+
+  const level = computeLevel();
+  const info  = levelInfo[level];
+  const pctTotal = Math.round((totalScore / 100) * 100);
+
+  document.getElementById("res-level").textContent = level;
+  document.getElementById("res-name").textContent  = studentName;
+  document.getElementById("res-desc").textContent  = info.desc;
+  document.getElementById("res-score").textContent =
+    "Puntuación total: " + totalScore + " / 100 puntos  ·  " + pctTotal + "%";
+  document.getElementById("res-rec").textContent   = info.rec;
+
+  // Level breakdown
+  const bd = document.getElementById("breakdown");
+  bd.innerHTML = "";
+  ["A1","A2","B1","B2"].forEach(lv => {
+    const p = levelMax[lv] > 0 ? Math.round((earned[lv]/levelMax[lv])*100) : 0;
+    const row = document.createElement("div");
+    row.className = "breakdown-row";
+    row.innerHTML = `
+      <span class="bk-label">${lv}</span>
+      <div class="bk-track"><div class="bk-fill" style="width:${p}%"></div></div>
+      <span class="bk-score">${earned[lv]} / ${levelMax[lv]} pts (${p}%)</span>`;
+    bd.appendChild(row);
+  });
+
+  // Category grid
+  const cg = document.getElementById("cat-grid");
+  cg.innerHTML = "";
+  cats.forEach(c => {
+    const s = catStats[c];
+    if (s.total === 0) return;
+    const p = Math.round((s.correct / s.total) * 100);
+    const card = document.createElement("div");
+    card.className = "cat-card";
+    card.innerHTML = `
+      <div class="cat-title">${c}</div>
+      <div class="cat-val">${s.correct}/${s.total}</div>
+      <div class="cat-sub">${p}% correcto</div>`;
+    cg.appendChild(card);
+  });
+
+  window.scrollTo({ top:0, behavior:"smooth" });
+}
+
+/* ═══════════════════════════════════════════
+   DESCARGA TXT
+═══════════════════════════════════════════ */
+function downloadTxt() {
+  const level = computeLevel();
+  const info  = levelInfo[level];
+  const now   = new Date();
+  const fecha = now.toLocaleDateString("es-ES", { day:"2-digit", month:"long", year:"numeric" });
+  const hora  = now.toLocaleTimeString("es-ES", { hour:"2-digit", minute:"2-digit" });
+  const pctTotal = Math.round((totalScore / 100) * 100);
+
+  let L = [];
+  L.push("╔══════════════════════════════════════════════════════════════╗");
+  L.push("║        INSTITUTO DE LENGUA ESPAÑOLA                         ║");
+  L.push("║        INFORME DE NIVEL CEFR — TEST DE CLASIFICACIÓN        ║");
+  L.push("╚══════════════════════════════════════════════════════════════╝");
+  L.push("");
+  L.push("Alumno/a   : " + studentName);
+  L.push("Fecha      : " + fecha + "  ·  " + hora);
+  L.push("Preguntas  : 40 (Vocabulario, Verbos, Expresiones, Gramática, Comprensión)");
+  L.push("Marco ref. : MCER / CEFR  (A1 · A2 · B1 · B2)");
+  L.push("");
+  L.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  L.push("  NIVEL OBTENIDO : " + level + "  —  " + info.label.toUpperCase());
+  L.push("  Puntuación     : " + totalScore + " / 100 pts  (" + pctTotal + "%)");
+  L.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  L.push("");
+  L.push("DESCRIPCIÓN:");
+  L.push(info.desc);
+  L.push("");
+  L.push("PUNTUACIÓN POR NIVEL:");
+  ["A1","A2","B1","B2"].forEach(lv => {
+    const p = levelMax[lv]>0 ? Math.round((earned[lv]/levelMax[lv])*100) : 0;
+    const bar = "█".repeat(Math.round(p/5)) + "░".repeat(20-Math.round(p/5));
+    L.push("  " + lv + "  " + bar + "  " + earned[lv] + "/" + levelMax[lv] + " pts (" + p + "%)");
+  });
+  L.push("");
+  L.push("RESULTADOS POR CATEGORÍA:");
+  cats.forEach(c => {
+    const s = catStats[c];
+    if (s.total === 0) return;
+    const p = Math.round((s.correct/s.total)*100);
+    const bar = "█".repeat(Math.round(p/5)) + "░".repeat(20-Math.round(p/5));
+    L.push("  " + c.padEnd(14) + bar + "  " + s.correct + "/" + s.total + " (" + p + "%)");
+  });
+  L.push("");
+  L.push("RECOMENDACIÓN:");
+  L.push(info.rec);
+  L.push("");
+  L.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  L.push("DETALLE DE RESPUESTAS (40 preguntas):");
+  L.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  L.push("");
+  answers.forEach(a => {
+    const mark = a.isCorrect ? "✓" : "✗";
+    const pts  = a.isCorrect ? "+" + a.pts + " pts" : "  0 pts";
+    L.push(mark + " [" + a.level + " · " + a.cat + "] Pregunta " + String(a.n).padStart(2,"0") + " — " + pts);
+    L.push("  Enunciado : " + a.question);
+    L.push("  Tu resp.  : " + a.chosen);
+    if (!a.isCorrect) L.push("  Correcta  : " + a.correct);
+    L.push("");
+  });
+  L.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+  L.push("Documento generado automáticamente · Uso educativo exclusivo");
+  L.push("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
+  const blob = new Blob([L.join("\n")], { type:"text/plain;charset=utf-8" });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement("a");
+  const safe = studentName.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑüÜ0-9 _-]/g,"").trim().replace(/ +/g,"_");
+  a.href = url;
+  a.download = "Informe_Espanol_CEFR_" + safe + ".txt";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ═══════════════════════════════════════════
+   RESTART
+═══════════════════════════════════════════ */
+function restart() {
+  cur = 0; totalScore = 0; studentName = "";
+  Object.keys(earned).forEach(k => earned[k] = 0);
+  cats.forEach(c => { catStats[c].correct = 0; catStats[c].total = 0; });
+  answers.length = 0;
+  document.getElementById("name-input").value = "";
+  document.getElementById("result-wrap").style.display = "none";
+  document.getElementById("q-card").style.display = "block";
+  document.getElementById("progress-wrap").style.display = "block";
+  renderQ();
+  window.scrollTo({ top:0, behavior:"smooth" });
+}
+
+renderQ();
+</script>
+</body>
+</html>
