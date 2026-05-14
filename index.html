@@ -738,7 +738,7 @@ function showModal() {
   setTimeout(() => document.getElementById("name-input").focus(), 100);
 }
 /* ── URL del script de Google Apps (reemplaza con la tuya) ── */
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyw9nUOqnIuuE4z7uFZMkt_HfDa2wgneqswBXYj7QGkwWrk6XWyuosgKb6SxILeS--MxA/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzpe3-Xuxk4rio4HdxHkuExt6phRI-Jjk0j4H0hxGqunzw8gjE5eJU71RH41s66jbZMWg/exec";
 
 function acceptName() {
   const val = document.getElementById("name-input").value.trim();
@@ -753,28 +753,29 @@ function sendToSheets() {
   if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("PEGA_AQUÍ")) return;
   const level = computeLevel();
   const now   = new Date();
-  const payload = {
-    nombre     : studentName,
-    fecha      : now.toLocaleDateString("es-ES", { day:"2-digit", month:"2-digit", year:"numeric" }),
-    hora       : now.toLocaleTimeString("es-ES", { hour:"2-digit", minute:"2-digit" }),
-    nivel      : level,
-    puntuacion : totalScore,
-    porcentaje : Math.round((totalScore / 100) * 100) + "%",
-    pts_A1     : earned.A1 + " / 10",
-    pts_A2     : earned.A2 + " / 20",
-    pts_B1     : earned.B1 + " / 30",
-    pts_B2     : earned.B2 + " / 40",
+
+  // Enviamos por GET con parámetros en la URL — evita problemas CORS con Apps Script
+  const params = new URLSearchParams({
+    nombre          : studentName,
+    fecha           : now.toLocaleDateString("es-ES", { day:"2-digit", month:"2-digit", year:"numeric" }),
+    hora            : now.toLocaleTimeString("es-ES", { hour:"2-digit", minute:"2-digit" }),
+    nivel           : level,
+    puntuacion      : totalScore,
+    porcentaje      : Math.round((totalScore / 100) * 100) + "%",
+    pts_A1          : earned.A1 + " / 10",
+    pts_A2          : earned.A2 + " / 20",
+    pts_B1          : earned.B1 + " / 30",
+    pts_B2          : earned.B2 + " / 40",
     cat_vocabulario : catStats["Vocabulario"].correct  + "/" + catStats["Vocabulario"].total,
     cat_verbos      : catStats["Verbos"].correct       + "/" + catStats["Verbos"].total,
     cat_expresiones : catStats["Expresiones"].correct  + "/" + catStats["Expresiones"].total,
     cat_gramatica   : catStats["Gramática"].correct    + "/" + catStats["Gramática"].total,
     cat_comprension : catStats["Comprensión"].correct  + "/" + catStats["Comprensión"].total
-  };
-  fetch(APPS_SCRIPT_URL, {
-    method : "POST",
-    mode   : "no-cors",
-    headers: { "Content-Type": "application/json" },
-    body   : JSON.stringify(payload)
+  });
+
+  fetch(APPS_SCRIPT_URL + "?" + params.toString(), {
+    method : "GET",
+    mode   : "no-cors"
   }).catch(() => {});
 }
 
